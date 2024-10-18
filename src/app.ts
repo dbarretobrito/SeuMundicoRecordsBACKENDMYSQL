@@ -1,13 +1,30 @@
 import express from 'express';
 import cors from 'cors';
-import productRoutes from './routes/productRoutes'; // Ajuste o caminho conforme necessário
+import dotenv from 'dotenv';
+import productRoutes from './routes/productRoutes';
+import authRoutes from './routes/authRoutes';
+import connection from './database/connection'; // Importando a conexão
+
+dotenv.config(); // Carrega variáveis de ambiente
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3333; // Prioriza a variável de ambiente
 
 app.use(cors());
-app.use(express.json());
-app.use('/api', productRoutes); // Você pode mudar a base da rota como preferir
+app.use(express.json()); // Middleware para body parser JSON
+
+// Definir rotas com prefixos adequados
+app.use('/auth', authRoutes); // Rotas de autenticação
+app.use('/api', productRoutes); // Rotas de produtos
+
+// Testar a conexão com o banco de dados
+connection.raw('SELECT 1 + 1 AS result')
+  .then(() => {
+    console.log('Conexão com o banco de dados bem-sucedida!');
+  })
+  .catch((error) => {
+    console.error('Erro ao conectar ao banco de dados:', error);
+  });
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
