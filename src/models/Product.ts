@@ -10,7 +10,9 @@ interface Product {
   description?: string;
   price: number;
   year?: number;
-  tags?: string;
+  tags?: string[];
+  created_at?: string; // Adicionando a propriedade created_at
+  updated_at?: string; // Adicionando a propriedade updated_at
 }
 
 export const createProduct = async (product: Product) => {
@@ -19,7 +21,16 @@ export const createProduct = async (product: Product) => {
 };
 
 export const updateProduct = async (id: number, product: Product) => {
-  return knex('products').where({ id }).update(product);
+  // Removendo 'created_at' para não ser atualizado
+  const { created_at, ...productData } = product;
+
+  const productToUpdate = {
+    ...productData,
+    tags: JSON.stringify(product.tags), // Converte array para string JSON
+    updated_at: new Date().toISOString().slice(0, 19).replace('T', ' '), // Atualiza o updated_at no formato correto
+  };
+
+  return knex('products').where({ id }).update(productToUpdate);
 };
 
 export const deleteProduct = async (id: number) => {

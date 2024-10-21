@@ -67,6 +67,7 @@ export const updateProductController = async (req: Request, res: Response): Prom
       res.status(404).json({ message: 'Produto não encontrado' });
     }
   } catch (error: unknown) {
+    console.error('Erro ao atualizar produto:', error);
     if (error instanceof Error) {
       res.status(500).json({ message: 'Erro ao atualizar produto', error: error.message });
     } else {
