@@ -1,18 +1,17 @@
 import { Router } from 'express';
 import * as ProductController from '../controllers/ProductController';
-import multer from 'multer';
-import { authenticateAdmin } from '../middlewares/authMiddleware'; // Importe o middleware de autenticação
-
-const upload = multer({ dest: 'uploads/' });
+import { authenticateAdmin } from '../middlewares/authMiddleware';
 
 const router = Router();
 
-// Proteger as rotas de criação, atualização e exclusão com o middleware
-router.post('/products', authenticateAdmin, upload.single('front_image'), ProductController.createProductController);
+// Rotas protegidas com autenticação de admin
+router.post('/products', authenticateAdmin, ProductController.createProductController);
+
 router.put('/products/:id', authenticateAdmin, ProductController.updateProductController);
+
 router.delete('/products/:id', authenticateAdmin, ProductController.deleteProductController);
 
-// As rotas de visualização não precisam de autenticação
+// Rotas públicas para visualização
 router.get('/products/:id', ProductController.getProductByIdController);
 router.get('/products', ProductController.getAllProductsController);
 

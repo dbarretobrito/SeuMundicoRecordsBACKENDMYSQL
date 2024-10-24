@@ -4,8 +4,9 @@ import dotenv from 'dotenv';
 import productRoutes from './routes/productRoutes';
 import authRoutes from './routes/authRoutes';
 import connection from './database/connection'; // Importando a conexão
+import path from 'path';
 
-dotenv.config(); // Carrega variáveis de ambiente
+dotenv.config({ path: path.resolve(__dirname, '../.env') }); // Carrega variáveis de ambiente
 
 const app = express();
 const PORT = process.env.PORT || 3333; // Prioriza a variável de ambiente

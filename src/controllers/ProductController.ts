@@ -5,78 +5,71 @@ import {
   deleteProduct,
   getProductById,
   getAllProducts,
+  Product,
 } from '../models/Product';
 
-export const createProductController = async (req: Request, res: Response): Promise<void> => {
+// Método de criação de produto
+export const createProductController = async (req: Request, res: Response) => {
   try {
-    const {
+    const { name, description, price, year, tags, front_image, back_image, detail_image, detail2_image } = req.body;
+
+    const product: Product = {
       name,
-      price,
-      back_image,
-      detail_image,
-      detail2_image,
       description,
-      year,
-      tags,
-    } = req.body;
-
-    let front_image: string | undefined;
-    if (req.file) {
-      front_image = req.file.path;
-    } else if (req.body.front_image) {
-      front_image = req.body.front_image;
-    }
-
-    if (!front_image) {
-      res.status(400).json({ message: "O campo 'front_image' é obrigatório." });
-      return;
-    }
-
-    const product = {
-      name,
       price,
+      year,
+      tags, // Mantenha como array de strings
       front_image,
-      back_image,
-      detail_image,
-      detail2_image,
-      description,
-      year,
-      tags,
+      back_image: back_image || null,
+      detail_image: detail_image || null,
+      detail2_image: detail2_image || null,
     };
 
-    const id = await createProduct(product);
-    res.status(201).json({ id, message: 'Produto criado com sucesso' });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: 'Erro ao criar produto', error: error.message });
-    } else {
-      res.status(500).json({ message: 'Erro desconhecido ao criar produto' });
-    }
+    // Chama a função para criar o produto
+    const productId = await createProduct(product);
+
+    res.status(201).json({ id: productId, ...product });
+  } catch (error) {
+    console.error("Erro ao criar produto:", error);
+    const errorMessage = (error as Error).message || 'Erro desconhecido';
+    res.status(500).json({ message: 'Erro ao criar produto', error: errorMessage });
   }
 };
 
-export const updateProductController = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
-  const product = req.body;
-
+// Método de atualização de produto
+export const updateProductController = async (req: Request, res: Response) => {
   try {
-    const result = await updateProduct(Number(id), product);
-    if (result) {
-      res.status(200).json({ message: 'Produto atualizado com sucesso' });
-    } else {
-      res.status(404).json({ message: 'Produto não encontrado' });
+    const { id } = req.params;  // Obtém o ID do produto da URL
+    const { name, description, price, year, tags, front_image, back_image, detail_image, detail2_image } = req.body;
+
+    const product: Product = {
+      name,
+      description,
+      price,
+      year,
+      tags, // Mantém como array de strings
+      front_image,
+      back_image: back_image || null,
+      detail_image: detail_image || null,
+      detail2_image: detail2_image || null,
+    };
+
+    // Atualizar produto
+    const updatedRows = await updateProduct(Number(id), product);
+
+    if (updatedRows === 0) {
+      return res.status(404).json({ message: 'Produto não encontrado' });  // Trata caso em que o ID não existe
     }
-  } catch (error: unknown) {
-    console.error('Erro ao atualizar produto:', error);
-    if (error instanceof Error) {
-      res.status(500).json({ message: 'Erro ao atualizar produto', error: error.message });
-    } else {
-      res.status(500).json({ message: 'Erro desconhecido ao atualizar produto' });
-    }
+
+    // Responder ao cliente
+    res.status(200).json({ message: 'Produto atualizado com sucesso', product });
+  } catch (error) {
+    console.error("Erro ao atualizar produto:", error);
+    res.status(500).json({ message: 'Erro ao atualizar produto', error: (error as Error).message });
   }
 };
 
-
+// Método de exclusão de produto (sem necessidade de alteração)
 export const deleteProductController = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
@@ -96,7 +89,7 @@ export const deleteProductController = async (req: Request, res: Response): Prom
   }
 };
 
-
+// Método para obter produto por ID (sem necessidade de alteração)
 export const getProductByIdController = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
@@ -116,7 +109,7 @@ export const getProductByIdController = async (req: Request, res: Response): Pro
   }
 };
 
-
+// Método para obter todos os produtos (sem necessidade de alteração)
 export const getAllProductsController = async (req: Request, res: Response): Promise<void> => {
   try {
     const products = await getAllProducts();
@@ -129,4 +122,3 @@ export const getAllProductsController = async (req: Request, res: Response): Pro
     }
   }
 };
-
