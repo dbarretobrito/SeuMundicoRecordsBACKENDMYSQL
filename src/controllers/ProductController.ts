@@ -9,7 +9,7 @@ import {
 } from '../models/Product';
 
 // Método de criação de produto
-export const createProductController = async (req: Request, res: Response) => {
+export const createProductController = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, description, price, year, tags, front_image, back_image, detail_image, detail2_image } = req.body;
 
@@ -37,7 +37,7 @@ export const createProductController = async (req: Request, res: Response) => {
 };
 
 // Método de atualização de produto
-export const updateProductController = async (req: Request, res: Response) => {
+export const updateProductController = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;  // Obtém o ID do produto da URL
     const { name, description, price, year, tags, front_image, back_image, detail_image, detail2_image } = req.body;
@@ -58,7 +58,8 @@ export const updateProductController = async (req: Request, res: Response) => {
     const updatedRows = await updateProduct(Number(id), product);
 
     if (updatedRows === 0) {
-      return res.status(404).json({ message: 'Produto não encontrado' });  // Trata caso em que o ID não existe
+      res.status(404).json({ message: 'Produto não encontrado' });  // Trata caso em que o ID não existe
+      return; // Adiciona o return aqui
     }
 
     // Responder ao cliente
@@ -69,7 +70,7 @@ export const updateProductController = async (req: Request, res: Response) => {
   }
 };
 
-// Método de exclusão de produto (sem necessidade de alteração)
+// Método de exclusão de produto
 export const deleteProductController = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
@@ -89,7 +90,7 @@ export const deleteProductController = async (req: Request, res: Response): Prom
   }
 };
 
-// Método para obter produto por ID (sem necessidade de alteração)
+// Método para obter produto por ID
 export const getProductByIdController = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
@@ -109,7 +110,7 @@ export const getProductByIdController = async (req: Request, res: Response): Pro
   }
 };
 
-// Método para obter todos os produtos (sem necessidade de alteração)
+// Método para obter todos os produtos
 export const getAllProductsController = async (req: Request, res: Response): Promise<void> => {
   try {
     const products = await getAllProducts();
