@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+console.log('Conectando ao banco de dados:', process.env.DB_NAME);
+
 const connection: Knex = knex({
   client: 'mysql2',
   connection: {
