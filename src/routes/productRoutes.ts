@@ -3,6 +3,7 @@
 import { Router } from 'express';
 import * as ProductController from '../controllers/ProductController';
 import { authenticateAdmin } from '../middlewares/authMiddleware';
+import { formatProductName } from '../utils/formatProductName';  // Importe a função de formatação
 
 const router = Router();
 
@@ -13,7 +14,18 @@ router.delete('/products/:id', authenticateAdmin, ProductController.deleteProduc
 
 // Rotas públicas para visualização
 router.get('/products/:id', ProductController.getProductByIdController);
-router.get('/product/:name', ProductController.getProductByNameController); // Aqui
+
+// Modificar a rota para garantir que o nome do produto seja formatado
+router.get('/product/:name', (req, res, next) => {
+  try {
+    const formattedName = formatProductName(req.params.name); // Formate o nome do produto
+    req.params.name = formattedName; // Atribua o nome formatado ao `req.params.name`
+    next(); // Chame o próximo middleware (que será o controller)
+  } catch (error) {
+    next(error); // Caso haja um erro, passe para o próximo middleware de erro
+  }
+}, ProductController.getProductByNameController);
+
 router.get('/products', ProductController.getAllProductsController);
 
 export default router;
