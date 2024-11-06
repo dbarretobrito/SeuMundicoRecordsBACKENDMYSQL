@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import helmet from 'helmet';
 import productRoutes from './routes/productRoutes';
 import authRoutes from './routes/authRoutes';
 import connection from './database/connection'; // Importando a conexão
@@ -12,6 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3333; // Prioriza a variável de ambiente
 
 app.use(cors());
+app.use(helmet());
 app.use(express.json()); // Middleware para body parser JSON
 
 // Definir rotas com prefixos adequados
