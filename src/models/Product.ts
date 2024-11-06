@@ -54,6 +54,10 @@ export const getProductById = async (id: number) => {
   return knex('products').where({ id }).first();
 };
 
+export const getProductByName = async (name: string) => {
+  return knex('products').where({ name }).first(); // Busca pelo nome do produto
+};
+
 // Função para obter todos os produtos
 export const getAllProducts = async () => {
   return knex('products').select('*');
